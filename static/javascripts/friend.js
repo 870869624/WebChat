@@ -1,4 +1,42 @@
 $(document).ready(function() {
+    // 点击推荐好友按钮
+    $(document).on('click', '.a-recommend-list', function(e) {
+        e.stopPropagation();
+        var popover = $(this).closest('.recommendlist').find('.popover');
+        $('.popover').not(popover).hide();
+        popover.toggle();
+        if (popover.is(':visible')) {
+            loadRecommendFriends();
+        }
+    });
+
+    // 加载推荐好友列表
+    function loadRecommendFriends() {
+        $.ajax({
+            url: '/friend/recommend',
+            type: 'POST',
+            success: function(res) {
+                if (res.code === 0) {
+                    var recommendList = res.data;
+                    var html = '';
+                    recommendList.forEach(function(user) {
+                        html += '<li class="li-friend-item" data-uid="' + user.user_id + '" data-username="' + user.username + '" data-avatar_id="' + user.avatar_id + '">';
+                        html += '<img src="/static/images/user/' + user.avatar_id + '.png" alt="portrait_' + user.avatar_id + '">';
+                        html += '<b>' + user.username + '</b>';
+                        html += '<button class="btn btn-primary btn-sm add-friend-btn" style="float:right;margin-top:10px;">添加好友</button>';
+                        html += '</li>';
+                    });
+                    $('.ul-recommend-list').html(html || '<li>暂无推荐好友</li>');
+                } else {
+                    layer.msg(res.msg);
+                }
+            },
+            error: function() {
+                layer.msg('获取推荐好友列表失败，请重试');
+            }
+        });
+    }
+
     // 点击头像显示添加好友按钮
     $(document).on('click', '.user-avatar', function(e) {
         e.stopPropagation();
