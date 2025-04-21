@@ -1,0 +1,23 @@
+version: '4.0'
+
+services:
+ 
+ db:
+    image: mysql:8.0.37
+    platform: linux/x86_64
+    container_name: go_gin_chat
+    volumes:
+      - ./mydir:/mydir
+      - ./.datadir:/var/lib/mysql
+      # - ./conf/my.cnf:/etc/my.cnf
+    environment:
+      - "MYSQL_ROOT_USERNAME=root"
+      - "MYSQL_ROOT_PASSWORD=123456"
+      - "MYSQL_DATABASE=go_gin_chat"
+      - "MYSQL_USER=admin"
+      - "MYSQL_PASSWORD=admin"
+      - "TZ=Asia/Shanghai"
+      - "charset=utf8mb4"
+      - "collation=utf8mb4_general_ci"
+    ports:
+      - 3306:3306

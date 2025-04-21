@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	<title>多人聊天室</title>
+	<link rel="stylesheet" href="//lf9-cdn-tos.bytecdntp.com/cdn/expire-1-M/twitter-bootstrap/3.3.5/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/static/rolling/css/rolling.css">
+	<link rel="stylesheet" href="/static/stylesheets/style.css">
+	<link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon" />
+
+	<script type="text/javascript" src="//lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/1.11.2/jquery.min.js"></script>
+	<script type="text/javascript" src="//lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/static/rolling/js/rolling.js"></script>
+	<script type="text/javascript" src="/static/javascripts/3d.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/live2d-widget@3.0.4/lib/L2Dwidget.min.js"></script>
+</head>
+<body class="rooms">
+
+	<div class="scrollbar-macosx">
+		<div class="header">
+			<div class="toptext">
+				<a href="#">
+					<span class="glyphicon glyphicon-home"></span>
+					<b>选择一个聊天室</b>
+				</a>
+			</div>
+			<ul class="topnavlist">
+				<li class="userinfo">
+					<a><span class="glyphicon glyphicon-user"></span><b> {{ .user_info.username }} </b></a>
+				</li>
+				<li><a class="_logout" href="javascript:"> 退出登录 </a></li>
+			</ul>
+
+			<div class="clapboard hidden"></div>
+		</div>
+		<div class="main container">
+			<div class="room_list">
+
+				{{range .rooms}}
+
+				<div class="col-xs-6 col-sm-6 col-md-4">
+					<a href="/room/{{ .id }}" class="thumbnail">
+						<img src="/static/images/rooms/{{ .id }}.jpg" alt="聊天室{{ .id }}">
+						<span><span class='glyphicon glyphicon-user'></span>&nbsp;{{ .num }}</span>
+					</a>
+				</div>
+
+				{{ end }}
+			</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript" src="//lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/1.11.2/jquery.min.js"></script>
+<script type="text/javascript" src="//lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/static/rolling/js/rolling.js"></script>
+<script type="text/javascript" src="/static/javascripts/websocket-heartbeat.js"></script>
+<script type="text/javascript" src="/static/javascripts/Public.js?t=2021628141400"></script>
+<script type="text/javascript" src="/static/emoji/emojionearea.min.js"></script>
+<script type="text/javascript" src="//lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/layer/3.1.1/layer.min.js"></script>
+<script type="text/javascript" src="/static/javascripts/load-msg-more.js?t=20201027141958"></script>
+<script>
+
+	$("._logout").click(function () {
+		clearCookie();
+		window.location.assign("/");
+		// window.location.href = '/';
+	});
+	function clearCookie(){
+		var date=new Date();
+		date.setTime(date.getTime()-10000);
+		var keys=document.cookie.match(/[^ =;]+(?=\=)/g);
+		if (keys) {
+			for (var i =  keys.length; i--;)
+				document.cookie=keys[i]+"=0; expire="+date.toGMTString()+"; path=/";
+		}
+	}
+
+	</script>
+</html>
