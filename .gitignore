@@ -1,5 +1,5 @@
 .idea
-/conf/config.go
+# /conf/config.go
 /tmp
 /tmp_images
 /bindata
