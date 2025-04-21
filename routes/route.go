@@ -1,13 +1,15 @@
 package routes
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 	"go-gin-chat/controller"
+	"go-gin-chat/services/friends"
 	"go-gin-chat/services/session"
 	"go-gin-chat/static"
 	"go-gin-chat/ws/primary"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 )
 
 func InitRoute() *gin.Engine {
@@ -17,7 +19,7 @@ func InitRoute() *gin.Engine {
 	if viper.GetString(`app.debug_mod`) == "false" {
 		// live 模式 打包用
 		router.StaticFS("/static", http.FS(static.EmbedStatic))
-	}else{
+	} else {
 		// dev 开发用 避免修改静态资源需要重启服务
 		router.StaticFS("/static", http.Dir("static"))
 	}
@@ -29,6 +31,9 @@ func InitRoute() *gin.Engine {
 		sr.POST("/login", controller.Login)
 		sr.GET("/logout", controller.Logout)
 		sr.GET("/ws", primary.Start)
+		sr.POST("/friend/add", friends.AddFriend)
+		sr.POST("/friend/list", friends.AddFriend)
+		sr.POST("/friend/recommend", friends.AddFriend)
 
 		authorized := sr.Group("/", session.AuthSessionMiddle())
 		{
