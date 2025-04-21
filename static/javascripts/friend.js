@@ -53,9 +53,8 @@ $(document).ready(function() {
     // 点击添加好友按钮
     $(document).on('click', '.add-friend-btn', function(e) {
         e.stopPropagation();
-        var userAvatar = $(this).closest('li').find('.user-avatar');
-        var toUserId = userAvatar.data('uid');
-
+        var toUserId = $(this).closest('.add-friend-popup').siblings('.user-avatar').data('uid');
+        console.log(toUserId,"111111111");
         $.ajax({
             url: '/friend/add',
             type: 'POST',

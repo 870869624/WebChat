@@ -92,8 +92,23 @@ func AddFriend(c *gin.Context) {
 		})
 		return
 	}
+	result1 := models.ChatDB.Where("user_id = ? AND to_user_id = ?", toUserId, userInfo["uid"]).First(&existingFriend)
+	if result1.RowsAffected > 0 {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 1,
+			"msg":  "已经是好友关系",
+		})
+		return
+	}
 
 	user_id := int(userInfo["uid"].(uint))
+	if user_id == toUserId {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 1,
+			"msg":  "不能添加自己为好友",
+		})
+		return
+	}
 
 	fmt.Println(user_id, reflect.TypeOf(user_id))
 	// 创建好友关系
@@ -103,6 +118,18 @@ func AddFriend(c *gin.Context) {
 	}
 
 	if err := models.ChatDB.Create(&friend).Error; err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 1,
+			"msg":  "添加好友失败",
+		})
+		return
+	}
+	friend1 := models.Friends{
+		UserId:   toUserId,
+		ToUserId: user_id,
+	}
+
+	if err := models.ChatDB.Create(&friend1).Error; err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"code": 1,
 			"msg":  "添加好友失败",
