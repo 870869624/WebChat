@@ -53,8 +53,14 @@ $(document).ready(function() {
     // 点击添加好友按钮
     $(document).on('click', '.add-friend-btn', function(e) {
         e.stopPropagation();
-        var toUserId = $(this).closest('.add-friend-popup').siblings('.user-avatar').data('uid');
-        console.log(toUserId,"111111111");
+        var toUserId;
+        if ($(this).closest('.li-friend-item').length > 0) {
+            // 推荐好友列表中的添加好友按钮
+            toUserId = $(this).closest('.li-friend-item').data('uid');
+        } else {
+            // 聊天消息中的添加好友按钮
+            toUserId = $(this).closest('.add-friend-popup').siblings('.user-avatar').data('uid');
+        }
         $.ajax({
             url: '/friend/add',
             type: 'POST',
