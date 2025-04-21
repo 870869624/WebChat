@@ -32,7 +32,7 @@ func InitRoute() *gin.Engine {
 		sr.GET("/logout", controller.Logout)
 		sr.GET("/ws", primary.Start)
 		sr.POST("/friend/add", friends.AddFriend)
-		sr.POST("/friend/list", friends.AddFriend)
+		sr.GET("/friend/list", friends.GetFriendList)
 		sr.POST("/friend/recommend", friends.AddFriend)
 
 		authorized := sr.Group("/", session.AuthSessionMiddle())

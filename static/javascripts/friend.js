@@ -1,10 +1,10 @@
-// 好友相关的交互逻辑
 $(document).ready(function() {
-    // 点击用户头像显示添加好友按钮
+    // 点击头像显示添加好友按钮
     $(document).on('click', '.user-avatar', function(e) {
-        e.stopPropagation(); // 阻止事件冒泡
-        $('.add-friend-popup').hide(); // 隐藏其他弹出层
-        $(this).siblings('.add-friend-popup').show();
+        e.stopPropagation();
+        var popup = $(this).siblings('.add-friend-popup');
+        $('.add-friend-popup').not(popup).hide();
+        popup.toggle();
     });
 
     // 点击其他地方隐藏添加好友按钮
@@ -15,10 +15,9 @@ $(document).ready(function() {
     // 点击添加好友按钮
     $(document).on('click', '.add-friend-btn', function(e) {
         e.stopPropagation();
-        const toUserId = $(this).closest('li').find('.user-avatar').data('uid');
-        const toUsername = $(this).closest('li').find('.user-avatar').data('username');
-        
-        // 发送添加好友请求
+        var userAvatar = $(this).closest('li').find('.user-avatar');
+        var toUserId = userAvatar.data('uid');
+
         $.ajax({
             url: '/friend/add',
             type: 'POST',
@@ -27,17 +26,59 @@ $(document).ready(function() {
             },
             success: function(res) {
                 if (res.code === 0) {
-                    layer.msg('已发送好友请求给 ' + toUsername);
+                    layer.msg('添加好友成功');
+                    loadFriendList(); // 刷新好友列表
                 } else {
-                    layer.msg(res.msg || '发送好友请求失败');
+                    layer.msg(res.msg);
                 }
             },
             error: function() {
-                layer.msg('网络错误，请稍后重试');
+                layer.msg('添加好友失败，请重试');
             }
         });
 
-        // 隐藏弹出层
-        $('.add-friend-popup').hide();
+        $(this).closest('.add-friend-popup').hide();
     });
+
+    // 点击好友列表按钮
+    $(document).on('click', '.a-friend-list', function(e) {
+        e.stopPropagation();
+        var popover = $(this).closest('.friendlist').find('.popover');
+        $('.popover').not(popover).hide();
+        popover.toggle();
+        if (popover.is(':visible')) {
+            loadFriendList();
+        }
+    });
+
+    // 点击其他地方隐藏好友列表
+    $(document).on('click', function() {
+        $('.friendlist .popover').hide();
+    });
+
+    // 加载好友列表
+    function loadFriendList() {
+        $.ajax({
+            url: '/friend/list',
+            type: 'GET',
+            success: function(res) {
+                if (res.code === 0) {
+                    var friendList = res.data;
+                    var html = '';
+                    friendList.forEach(function(friend) {
+                        html += '<li class="li-friend-item" data-uid="' + friend.user_id + '" data-username="' + friend.username + '" data-avatar_id="' + friend.avatar_id + '">';
+                        html += '<img src="/static/images/user/' + friend.avatar_id + '.png" alt="portrait_' + friend.avatar_id + '">';
+                        html += '<b>' + friend.username + '</b>';
+                        html += '</li>';
+                    });
+                    $('.ul-friend-list').html(html || '<li>暂无好友</li>');
+                } else {
+                    layer.msg(res.msg);
+                }
+            },
+            error: function() {
+                layer.msg('获取好友列表失败，请重试');
+            }
+        });
+    }
 });

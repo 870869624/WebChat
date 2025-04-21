@@ -13,6 +13,52 @@ import (
 
 type FriendController struct{}
 
+// GetFriendList 获取好友列表
+func GetFriendList(c *gin.Context) {
+	// 获取当前用户ID
+	userInfo := session.GetSessionUserInfo(c)
+	if userInfo == nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 1,
+			"msg":  "请先登录",
+		})
+		return
+	}
+
+	user_id := int(userInfo["uid"].(uint))
+
+	// 查询好友列表
+	var friends []models.Friends
+	if err := models.ChatDB.Where("user_id = ?", user_id).Find(&friends).Error; err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 1,
+			"msg":  "获取好友列表失败",
+		})
+		return
+	}
+
+	// 获取好友的用户信息
+	var friendList []map[string]interface{}
+	for _, friend := range friends {
+		var user models.User
+		if err := models.ChatDB.Where("id = ?", friend.ToUserId).First(&user).Error; err != nil {
+			continue
+		}
+		friendInfo := map[string]interface{}{
+			"user_id":   user.ID,
+			"username":  user.Username,
+			"avatar_id": user.AvatarId,
+		}
+		friendList = append(friendList, friendInfo)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code": 0,
+		"msg":  "获取成功",
+		"data": friendList,
+	})
+}
+
 // AddFriend 添加好友
 func AddFriend(c *gin.Context) {
 	// 获取当前用户ID
